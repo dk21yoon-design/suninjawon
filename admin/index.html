@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>선인자원 영업 관리</title>
+<meta name="robots" content="noindex,nofollow">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  :root {
+    --green-deep: #1F3A0F;
+    --green-mid: #2D5016;
+    --green: #4A7C2E;
+    --green-light: #7BA05B;
+    --green-accent: #C9D85A;
+    --cream: #FAF7F2;
+    --cream-dark: #F0EBE0;
+    --text: #1a2332;
+    --text-mid: #4a5568;
+    --text-light: #94a3b8;
+    --shadow-sm: 0 2px 8px rgba(31, 58, 15, 0.06);
+    --shadow: 0 4px 24px rgba(31, 58, 15, 0.08);
+    --border: rgba(45, 80, 22, 0.08);
+    --red: #DC2626;
+    --orange: #F59E0B;
+    --blue: #2563EB;
+    --purple: #7C3AED;
+  }
+  
+  body {
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    color: var(--text);
+    background: var(--cream);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  
+  /* === Login === */
+  .login-screen {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, var(--green-deep), var(--green-mid));
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px; z-index: 1000;
+  }
+  .login-screen.hidden { display: none; }
+  .login-card {
+    background: white;
+    border-radius: 24px;
+    padding: 48px 40px;
+    max-width: 400px; width: 100%;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+    text-align: center;
+  }
+  .login-icon {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, var(--green-mid), var(--green));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px; font-size: 36px;
+    box-shadow: 0 10px 30px rgba(45, 80, 22, 0.3);
+  }
+  .login-title {
+    font-size: 24px; font-weight: 900;
+    color: var(--green-deep);
+    margin-bottom: 8px; letter-spacing: -0.5px;
+  }
+  .login-desc {
+    color: var(--text-mid);
+    font-size: 14px; margin-bottom: 28px;
+  }
+  .login-input {
+    width: 100%; padding: 14px 16px;
+    border: 2px solid var(--cream-dark);
+    border-radius: 12px; font-size: 15px;
+    font-family: inherit; background: var(--cream);
+    margin-bottom: 16px; transition: all 0.2s;
+    text-align: center; letter-spacing: 4px;
+  }
+  .login-input:focus {
+    outline: none; border-color: var(--green);
+    background: white;
+  }
+  .login-btn {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, var(--green-mid), var(--green));
+    color: white; border: none; border-radius: 12px;
+    font-size: 15px; font-weight: 800;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .login-btn:hover { transform: translateY(-2px); }
+  .login-error {
+    color: var(--red); font-size: 13px;
+    margin-top: 12px; display: none;
+  }
+  .login-error.show { display: block; }
+  .login-hint {
+    margin-top: 20px; font-size: 12px;
+    color: var(--text-light);
+  }
+  
+  /* === Header === */
+  header {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    box-shadow: var(--shadow-sm);
+    position: sticky; top: 0; z-index: 90;
+  }
+  .header-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px;
+  }
+  .header-logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+  }
+  .header-title {
+    font-size: 17px; font-weight: 900;
+    color: var(--green-mid); letter-spacing: -0.5px;
+  }
+  .header-title small {
+    font-size: 11px; color: var(--text-light);
+    font-weight: 600; margin-left: 6px;
+    background: var(--cream); padding: 2px 8px;
+    border-radius: 100px;
+  }
+  .header-nav { display: flex; gap: 8px; flex-wrap: wrap; }
+  .header-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 700;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .header-btn.outline {
+    background: var(--cream);
+    color: var(--green-mid);
+    border: 1px solid var(--border);
+  }
+  .header-btn.outline:hover { background: var(--cream-dark); }
+  .header-btn.danger {
+    background: #FEE2E2; color: var(--red);
+  }
+  .header-btn.danger:hover { background: #FECACA; }
+  
+  /* === Tabs === */
+  .tabs {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    overflow-x: auto;
+  }
+  .tabs-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: flex; gap: 4px;
+  }
+  .tab {
+    padding: 14px 18px;
+    border: none; background: none;
+    font-size: 14px; font-weight: 700;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  .tab:hover { color: var(--green-mid); }
+  .tab.active {
+    color: var(--green-mid);
+    border-bottom-color: var(--green-mid);
+  }
+  .tab-badge {
+    display: inline-block;
+    background: var(--green-accent);
+    color: var(--green-deep);
+    padding: 1px 7px;
+    border-radius: 100px;
+    font-size: 11px;
+    margin-left: 6px;
+    font-weight: 800;
+  }
+  .tab-badge.alert {
+    background: var(--red); color: white;
+  }
+  
+  /* === Container === */
+  .container {
+    max-width: 1400px; margin: 0 auto;
+    padding: 24px;
+  }
+  .page { display: none; }
+  .page.active { display: block; }
+  
+  /* === Dashboard === */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px; margin-bottom: 24px;
+  }
+  .stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+  }
+  .stat-card-head {
+    display: flex; justify-content: space-between;
+    align-items: flex-start; margin-bottom: 12px;
+  }
+  .stat-card-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .stat-card-icon.green { background: rgba(74, 124, 46, 0.15); }
+  .stat-card-icon.blue { background: rgba(37, 99, 235, 0.15); }
+  .stat-card-icon.orange { background: rgba(245, 158, 11, 0.15); }
+  .stat-card-icon.red { background: rgba(220, 38, 38, 0.15); }
+  .stat-card-icon.purple { background: rgba(124, 58, 237, 0.15); }
+  .stat-label {
+    font-size: 11px; font-weight: 700;
+    color: var(--text-light); letter-spacing: 1px;
+  }
+  .stat-value {
+    font-size: 28px; font-weight: 900;
+    color: var(--green-deep); letter-spacing: -1px;
+    line-height: 1.1;
+  }
+  .stat-sub {
+    font-size: 12px; color: var(--text-mid);
+    margin-top: 4px;
+  }
+  
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 900px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+  }
+  
+  .panel {
+    background: white;
+    border-radius: 18px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+  .panel-head {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 16px;
+  }
+  .panel-title {
+    font-size: 16px; font-weight: 900;
+    color: var(--green-deep);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .panel-action {
+    font-size: 12px; font-weight: 700;
+    color: var(--green-mid);
+    background: none; border: none;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .panel-action:hover { background: var(--cream); }
+  
+  /* === Reminder Items === */
+  .reminder-list {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .reminder-item {
+    display: flex; gap: 12px;
+    padding: 14px;
+    background: var(--cream);
+    border-radius: 12px;
+    border-left: 3px solid var(--orange);
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .reminder-item:hover { background: var(--cream-dark); }
+  .reminder-item.urgent { border-left-color: var(--red); }
+  .reminder-item.normal { border-left-color: var(--green); }
+  .reminder-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 18px;
+  }
+  .reminder-content { flex: 1; min-width: 0; }
+  .reminder-title {
+    font-weight: 800; font-size: 14px;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .reminder-desc {
+    font-size: 12px; color: var(--text-mid);
+    margin-top: 2px;
+  }
+  
+  /* === Section Distribution === */
+  .dist-list {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .dist-item {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .dist-label {
+    font-size: 13px; font-weight: 700;
+    color: var(--text);
+    width: 80px;
+    flex-shrink: 0;
+  }
+  .dist-bar {
+    flex: 1;
+    height: 24px;
+    background: var(--cream);
+    border-radius: 100px;
+    overflow: hidden;
+    position: relative;
+  }
+  .dist-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green-mid), var(--green-light));
+    border-radius: 100px;
+    transition: width 0.5s ease;
+    display: flex; align-items: center;
+    padding: 0 10px;
+    color: white; font-size: 11px; font-weight: 800;
+  }
+  .dist-value {
+    font-size: 13px; font-weight: 800;
+    color: var(--green-mid);
+    width: 40px;
+    text-align: right;
+  }
+  
+  /* === Empty State === */
+  .empty-state {
+    text-align: center;
+    padding: 32px 20px;
+    color: var(--text-light);
+  }
+  .empty-state-icon {
+    font-size: 48px; margin-bottom: 12px;
+    opacity: 0.5;
+  }
+  .empty-state-text {
+    font-size: 14px; font-weight: 600;
+  }
+  
+  /* === Page Header === */
+  .page-header {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 24px;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .page-title {
+    font-size: 24px; font-weight: 900;
+    color: var(--green-deep);
+    letter-spacing: -1px;
+  }
+  .page-actions {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  
+  /* === Buttons === */
+  .btn {
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 13px; font-weight: 800;
+    border: none; cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--green-mid), var(--green));
+    color: white;
+    box-shadow: 0 4px 12px rgba(45, 80, 22, 0.25);
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(45, 80, 22, 0.35);
+  }
+  .btn-outline {
+    background: white;
+    color: var(--green-mid);
+    border: 1.5px solid var(--green-mid);
+  }
+  .btn-outline:hover { background: var(--cream); }
+  .btn-secondary {
+    background: var(--cream);
+    color: var(--text-mid);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--cream-dark); }
+  .btn-danger {
+    background: #FEE2E2;
+    color: var(--red);
+  }
+  .btn-danger:hover { background: #FECACA; }
+  
+  /* === Filter Bar === */
+  .filter-bar {
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    display: flex; gap: 10px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .search-input {
+    flex: 1; min-width: 200px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--cream-dark);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--cream);
+  }
+  .search-input:focus {
+    outline: none; border-color: var(--green);
+    background: white;
+  }
+  .filter-select {
+    padding: 10px 14px;
+    border: 1.5px solid var(--cream-dark);
+    border-radius: 10px;
+    font-size: 13px; font-weight: 700;
+    background: var(--cream);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  
+  /* === Companies Table === */
+  .table-wrap {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  thead {
+    background: var(--cream);
+    border-bottom: 2px solid var(--border);
+  }
+  th {
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 800;
+    font-size: 12px;
+    color: var(--text-mid);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  tbody tr {
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+  tbody tr:hover { background: var(--cream); }
+  
+  .company-name {
+    font-weight: 800;
+    color: var(--green-deep);
+  }
+  .company-name small {
+    display: block;
+    font-size: 12px; font-weight: 500;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+  
+  .status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+  .status-badge.미발송 { background: #F3F4F6; color: #6B7280; }
+  .status-badge.발송완료 { background: #DBEAFE; color: var(--blue); }
+  .status-badge.답장받음 { background: #FEF3C7; color: var(--orange); }
+  .status-badge.거래성사 { background: #D1FAE5; color: #059669; }
+  .status-badge.거절 { background: #FEE2E2; color: var(--red); }
+  
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
+    margin-right: 4px;
+    margin-bottom: 2px;
+  }
+  .tag.vip { background: #FEF3C7; color: #D97706; }
+  .tag.large { background: #E0E7FF; color: #4338CA; }
+  .tag.regular { background: #D1FAE5; color: #059669; }
+  .tag.interest { background: #FEE2E2; color: var(--red); }
+  
+  /* === Modal === */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(31, 58, 15, 0.65);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    max-width: 700px; width: 100%;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+  }
+  .modal.large { max-width: 900px; }
+  .modal-head {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-title {
+    font-size: 20px; font-weight: 900;
+    color: var(--green-deep);
+    letter-spacing: -0.5px;
+  }
+  .modal-close {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: none; background: var(--cream);
+    color: var(--text-mid);
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { background: var(--cream-dark); }
+  .modal-body { margin-bottom: 20px; }
+  .modal-footer {
+    display: flex; gap: 8px; justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+  
+  /* === Form === */
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  @media (max-width: 600px) {
+    .form-row { grid-template-columns: 1fr; }
+  }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block;
+    font-weight: 700; font-size: 13px;
+    color: var(--text); margin-bottom: 6px;
+  }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%; padding: 11px 14px;
+    border: 1.5px solid var(--cream-dark);
+    border-radius: 10px; font-size: 14px;
+    font-family: inherit; background: var(--cream);
+    transition: all 0.2s;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    outline: none; border-color: var(--green);
+    background: white;
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-group .req { color: var(--red); }
+  
+  /* === Tag Selector === */
+  .tag-selector {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .tag-option {
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-size: 12px; font-weight: 700;
+    border: 1.5px solid var(--cream-dark);
+    background: var(--cream);
+    color: var(--text-mid);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .tag-option:hover { border-color: var(--green-light); }
+  .tag-option.selected {
+    background: linear-gradient(135deg, var(--green-mid), var(--green));
+    color: white;
+    border-color: var(--green-mid);
+  }
+  
+  /* === Email Compose === */
+  .compose-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 20px;
+  }
+  @media (max-width: 900px) {
+    .compose-grid { grid-template-columns: 1fr; }
+  }
+  
+  .template-list {
+    display: flex; flex-direction: column; gap: 8px;
+    margin-bottom: 16px;
+  }
+  .template-item {
+    padding: 12px 14px;
+    background: var(--cream);
+    border-radius: 10px;
+    border: 1.5px solid var(--cream-dark);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .template-item:hover { border-color: var(--green-light); }
+  .template-item.selected {
+    background: linear-gradient(135deg, var(--green-mid), var(--green));
+    color: white;
+    border-color: var(--green-mid);
+  }
+  .template-item-name {
+    font-weight: 800; font-size: 14px;
+    margin-bottom: 2px;
+  }
+  .template-item-desc {
+    font-size: 12px;
+    opacity: 0.8;
+  }
+  
+  /* === Email Preview === */
+  .email-preview {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+  }
+  .email-preview-head {
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .email-subject {
+    font-weight: 900;
+    font-size: 15px;
+    color: var(--green-deep);
+  }
+  .email-meta {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 4px;
+  }
+  .email-body {
+    color: var(--text);
+    word-break: keep-all;
+  }
+  
+  /* === Action Buttons === */
+  .action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  
+  /* === Send Modal === */
+  .send-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .send-option {
+    padding: 18px;
+    border-radius: 14px;
+    border: 1.5px solid var(--cream-dark);
+    background: var(--cream);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .send-option:hover {
+    border-color: var(--green-light);
+    background: white;
+  }
+  .send-option-icon {
+    font-size: 32px;
+    margin-bottom: 6px;
+  }
+  .send-option-name {
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--green-deep);
+  }
+  
+  /* === History List === */
+  .history-list {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .history-item {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex; gap: 14px;
+    align-items: center;
+    transition: all 0.2s;
+  }
+  .history-item:hover {
+    border-color: var(--green-light);
+  }
+  .history-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: rgba(74, 124, 46, 0.1);
+    color: var(--green-mid);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .history-content { flex: 1; min-width: 0; }
+  .history-company {
+    font-weight: 800;
+    color: var(--green-deep);
+    font-size: 14px;
+  }
+  .history-info {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+  .history-date {
+    font-size: 12px;
+    color: var(--text-mid);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  
+  /* === Toast === */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: linear-gradient(135deg, var(--green-mid), var(--green));
+    color: white;
+    padding: 14px 24px; border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    font-weight: 700; font-size: 14px;
+    z-index: 300; opacity: 0;
+    transition: all 0.4s;
+    pointer-events: none;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .toast.error { background: linear-gradient(135deg, var(--red), #B91C1C); }
+  
+  /* === Detail View === */
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 600px) {
+    .detail-grid { grid-template-columns: 1fr; }
+  }
+  .detail-item {
+    background: var(--cream);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .detail-label {
+    font-size: 11px; font-weight: 700;
+    color: var(--text-light); letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .detail-value {
+    font-size: 14px; font-weight: 700;
+    color: var(--green-deep);
+  }
+  .detail-section {
+    margin-bottom: 20px;
+  }
+  .detail-section-title {
+    font-size: 13px; font-weight: 800;
+    color: var(--green-deep);
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  
+  /* === Memo === */
+  .memo-list {
+    display: flex; flex-direction: column; gap: 8px;
+    margin-bottom: 12px;
+  }
+  .memo-item {
+    background: var(--cream);
+    border-left: 3px solid var(--green);
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .memo-date {
+    font-size: 11px; color: var(--text-light);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .memo-text {
+    font-size: 13px; color: var(--text);
+    line-height: 1.5;
+  }
+  
+  /* === Hidden file input === */
+  input[type="file"].hidden { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-icon">🔐</div>
+    <div class="login-title">선인자원 영업 관리</div>
+    <div class="login-desc">관리자만 접근 가능합니다</div>
+    <input type="password" class="login-input" id="loginInput" placeholder="비밀번호" maxlength="6">
+    <button class="login-btn" onclick="checkLogin()">로그인</button>
+    <div class="login-error" id="loginError">비밀번호가 틀렸어요</div>
+    <div class="login-hint">초기 비밀번호: <strong>9413</strong> (변경 권장)</div>
+  </div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <div class="header-inner">
+    <a href="/" class="header-logo">
+      <svg width="32" height="32" viewBox="0 0 100 100">
+        <path d="M 50 10 A 40 40 0 1 1 10 50" stroke="#2D5016" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <polygon points="50,2 62,16 38,16" fill="#2D5016"/>
+        <path d="M 50 55 Q 32 48 32 36 Q 50 36 50 55 Z" fill="#7BA05B"/>
+        <path d="M 50 55 Q 68 48 68 36 Q 50 36 50 55 Z" fill="#C9D85A"/>
+        <line x1="50" y1="55" x2="50" y2="78" stroke="#2D5016" stroke-width="3.5" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div class="header-title">선인자원 영업 관리<small>ADMIN</small></div>
+      </div>
+    </a>
+    <div class="header-nav">
+      <button class="header-btn outline" onclick="exportData()">📥 내보내기</button>
+      <button class="header-btn outline" onclick="document.getElementById('importFile').click()">📤 가져오기</button>
+      <input type="file" id="importFile" class="hidden" accept=".json,.csv" onchange="importData(event)">
+      <button class="header-btn outline" onclick="changePassword()">🔒 비번변경</button>
+      <button class="header-btn danger" onclick="logout()">로그아웃</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===== TABS ===== -->
+<div class="tabs">
+  <div class="tabs-inner">
+    <button class="tab active" onclick="switchTab('dashboard', this)">📊 대시보드</button>
+    <button class="tab" onclick="switchTab('companies', this)">🏢 회사 관리 <span class="tab-badge" id="companiesBadge">0</span></button>
+    <button class="tab" onclick="switchTab('compose', this)">✉️ 메일 작성</button>
+    <button class="tab" onclick="switchTab('history', this)">📜 발송 이력</button>
+    <button class="tab" onclick="switchTab('reminders', this)">🔔 후속 연락 <span class="tab-badge alert" id="reminderBadge" style="display:none;">0</span></button>
+    <button class="tab" onclick="switchTab('templates', this)">📝 메일 템플릿</button>
+  </div>
+</div>
+
+<!-- ===== CONTAINER ===== -->
+<div class="container">
+
+  <!-- DASHBOARD PAGE -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div>
+        <div class="page-title">📊 대시보드</div>
+      </div>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-head">
+          <div>
+            <div class="stat-label">전체 회사</div>
+          </div>
+          <div class="stat-card-icon green">🏢</div>
+        </div>
+        <div class="stat-value" id="statTotal">0</div>
+        <div class="stat-sub" id="statTotalSub">등록된 거래처</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-head">
+          <div>
+            <div class="stat-label">이번 달 발송</div>
+          </div>
+          <div class="stat-card-icon blue">📤</div>
+        </div>
+        <div class="stat-value" id="statMonth">0</div>
+        <div class="stat-sub" id="statMonthSub">건</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-head">
+          <div>
+            <div class="stat-label">답장 받음</div>
+          </div>
+          <div class="stat-card-icon orange">💬</div>
+        </div>
+        <div class="stat-value" id="statReply">0</div>
+        <div class="stat-sub" id="statReplySub">답장률 0%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-head">
+          <div>
+            <div class="stat-label">거래 성사</div>
+          </div>
+          <div class="stat-card-icon purple">🎉</div>
+        </div>
+        <div class="stat-value" id="statDeal">0</div>
+        <div class="stat-sub" id="statDealSub">성사율 0%</div>
+      </div>
+    </div>
+    
+    <div class="dashboard-grid">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">🔔 후속 연락 필요</div>
+          <button class="panel-action" onclick="switchTabByName('reminders')">전체보기 →</button>
+        </div>
+        <div id="dashReminders"></div>
+      </div>
+      
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">📊 거래처 분포</div>
+        </div>
+        <div id="dashDistribution"></div>
+      </div>
+    </div>
+    
+    <div class="panel">
+      <div class="panel-head">
+        <div class="panel-title">📜 최근 활동</div>
+        <button class="panel-action" onclick="switchTabByName('history')">전체보기 →</button>
+      </div>
+      <div id="dashRecent"></div>
+    </div>
+  </div>
+
+  <!-- COMPANIES PAGE -->
+  <div class="page" id="page-companies">
+    <div class="page-header">
+      <div class="page-title">🏢 회사 관리</div>
+      <div class="page-actions">
+        <button class="btn btn-primary" onclick="openCompanyModal()">+ 회사 추가</button>
+      </div>
+    </div>
+    
+    <div class="filter-bar">
+      <input type="text" class="search-input" id="searchInput" placeholder="🔍 회사명, 담당자, 메모 검색..." oninput="renderCompanies()">
+      <select class="filter-select" id="filterStatus" onchange="renderCompanies()">
+        <option value="">📋 전체 상태</option>
+        <option value="미발송">미발송</option>
+        <option value="발송완료">발송완료</option>
+        <option value="답장받음">답장받음</option>
+        <option value="거래성사">거래성사</option>
+        <option value="거절">거절</option>
+      </select>
+      <select class="filter-select" id="filterTag" onchange="renderCompanies()">
+        <option value="">🏷️ 전체 태그</option>
+        <option value="vip">⭐ VIP</option>
+        <option value="large">📦 대량거래</option>
+        <option value="regular">🔄 정기거래</option>
+        <option value="interest">👀 관심중</option>
+      </select>
+      <select class="filter-select" id="filterIndustry" onchange="renderCompanies()">
+        <option value="">🏭 전체 업종</option>
+        <option value="공장">공장/제조</option>
+        <option value="학교">학교/관공서</option>
+        <option value="건설">건설/철거</option>
+        <option value="이사">이사/정리</option>
+        <option value="기타">기타</option>
+      </select>
+    </div>
+    
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>회사 / 담당자</th>
+            <th>업종</th>
+            <th>연락처</th>
+            <th>상태</th>
+            <th>태그</th>
+            <th>최근 연락</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="companiesTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- COMPOSE PAGE -->
+  <div class="page" id="page-compose">
+    <div class="page-header">
+      <div class="page-title">✉️ 영업 메일 작성</div>
+    </div>
+    
+    <div class="compose-grid">
+      <div class="panel">
+        <div class="panel-title">1️⃣ 받는 회사 선택</div>
+        <div class="form-group">
+          <label>저장된 회사에서 선택 또는 직접 입력</label>
+          <select class="form-group" id="composeCompany" onchange="loadCompanyToCompose()">
+            <option value="">-- 직접 입력 --</option>
+          </select>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>회사명 <span class="req">*</span></label>
+            <input type="text" id="composeCoName" placeholder="○○산업">
+          </div>
+          <div class="form-group">
+            <label>담당자</label>
+            <input type="text" id="composeContact" placeholder="홍길동 부장">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>받는 메일 <span class="req">*</span></label>
+          <input type="email" id="composeEmail" placeholder="example@company.com">
+        </div>
+        
+        <div class="panel-title" style="margin-top: 24px;">2️⃣ 템플릿 선택</div>
+        <div class="template-list" id="templateList"></div>
+        
+        <div class="form-group">
+          <label>📦 발생 자원 (체크하면 메일에 자동 반영)</label>
+          <div class="tag-selector" id="resourcesSelector"></div>
+        </div>
+        
+        <div class="form-group">
+          <label>📝 추가 메모 (선택)</label>
+          <textarea id="composeMemo" placeholder="개인 맞춤 멘트..."></textarea>
+        </div>
+        
+        <button class="btn btn-primary" style="width:100%;" onclick="generateEmail()">✨ 메일 생성</button>
+      </div>
+      
+      <div class="panel">
+        <div class="panel-title">3️⃣ 메일 미리보기</div>
+        <div class="email-preview">
+          <div class="email-preview-head">
+            <div class="email-subject" id="previewSubject">메일을 생성해주세요</div>
+            <div class="email-meta" id="previewMeta">받는사람: -</div>
+          </div>
+          <div class="email-body" id="previewBody">왼쪽에서 회사 정보를 입력하고 "메일 생성" 버튼을 눌러주세요.</div>
+        </div>
+        
+        <div class="action-row">
+          <button class="btn btn-outline" onclick="copyEmail()">📋 본문 복사</button>
+          <button class="btn btn-primary" onclick="openSendModal()">📧 메일 보내기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY PAGE -->
+  <div class="page" id="page-history">
+    <div class="page-header">
+      <div class="page-title">📜 발송 이력</div>
+    </div>
+    <div class="filter-bar">
+      <input type="text" class="search-input" id="historySearch" placeholder="🔍 회사명, 메모 검색..." oninput="renderHistory()">
+      <select class="filter-select" id="historyMonth" onchange="renderHistory()">
+        <option value="">전체 기간</option>
+      </select>
+    </div>
+    <div class="history-list" id="historyList"></div>
+  </div>
+
+  <!-- REMINDERS PAGE -->
+  <div class="page" id="page-reminders">
+    <div class="page-header">
+      <div class="page-title">🔔 후속 연락 필요</div>
+    </div>
+    <div class="reminder-list" id="remindersList"></div>
+  </div>
+
+  <!-- TEMPLATES PAGE -->
+  <div class="page" id="page-templates">
+    <div class="page-header">
+      <div class="page-title">📝 메일 템플릿 관리</div>
+      <div class="page-actions">
+        <button class="btn btn-secondary" onclick="resetTemplates()">🔄 기본값 복원</button>
+      </div>
+    </div>
+    <div id="templatesEditor"></div>
+  </div>
+
+</div>
+
+<!-- ===== COMPANY MODAL ===== -->
+<div class="modal-overlay" id="companyModal" onclick="closeModalBg(event, 'companyModal')">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="companyModalTitle">+ 새 회사 추가</div>
+      <button class="modal-close" onclick="closeModal('companyModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="companyId">
+      <div class="form-row">
+        <div class="form-group">
+          <label>회사명 <span class="req">*</span></label>
+          <input type="text" id="modalCoName" placeholder="○○산업">
+        </div>
+        <div class="form-group">
+          <label>담당자</label>
+          <input type="text" id="modalContact" placeholder="홍길동 부장">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>이메일</label>
+          <input type="email" id="modalEmail" placeholder="example@company.com">
+        </div>
+        <div class="form-group">
+          <label>전화번호</label>
+          <input type="tel" id="modalPhone" placeholder="02-0000-0000">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>업종</label>
+          <select id="modalIndustry">
+            <option value="공장">공장/제조</option>
+            <option value="학교">학교/관공서</option>
+            <option value="건설">건설/철거</option>
+            <option value="이사">이사/정리</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>상태</label>
+          <select id="modalStatus">
+            <option value="미발송">미발송</option>
+            <option value="발송완료">발송완료</option>
+            <option value="답장받음">답장받음</option>
+            <option value="거래성사">거래성사</option>
+            <option value="거절">거절</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>주소</label>
+        <input type="text" id="modalAddress" placeholder="인천광역시 ...">
+      </div>
+      <div class="form-group">
+        <label>🏷️ 태그</label>
+        <div class="tag-selector" id="modalTags">
+          <div class="tag-option" data-tag="vip">⭐ VIP</div>
+          <div class="tag-option" data-tag="large">📦 대량거래</div>
+          <div class="tag-option" data-tag="regular">🔄 정기거래</div>
+          <div class="tag-option" data-tag="interest">👀 관심중</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>📝 메모</label>
+        <textarea id="modalMemo" placeholder="회사 관련 정보, 특이사항 등..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" id="deleteBtn" onclick="deleteCompany()" style="display:none;">🗑️ 삭제</button>
+      <button class="btn btn-secondary" onclick="closeModal('companyModal')">취소</button>
+      <button class="btn btn-primary" onclick="saveCompany()">💾 저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DETAIL MODAL ===== -->
+<div class="modal-overlay" id="detailModal" onclick="closeModalBg(event, 'detailModal')">
+  <div class="modal large">
+    <div class="modal-head">
+      <div class="modal-title" id="detailTitle">회사 상세</div>
+      <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="quickEmail()">📧 메일 작성</button>
+      <button class="btn btn-secondary" onclick="editFromDetail()">✏️ 수정</button>
+      <button class="btn btn-secondary" onclick="closeModal('detailModal')">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SEND MODAL ===== -->
+<div class="modal-overlay" id="sendModal" onclick="closeModalBg(event, 'sendModal')">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">📧 메일 보내기</div>
+      <button class="modal-close" onclick="closeModal('sendModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size: 14px; color: var(--text-mid); margin-bottom: 16px;">
+        본인의 메일 앱이 자동으로 열리고, 본문이 채워집니다.<br>
+        <strong>검토 후 직접 보내주세요!</strong>
+      </p>
+      <div class="send-options">
+        <div class="send-option" onclick="sendVia('gmail')">
+          <div class="send-option-icon">📧</div>
+          <div class="send-option-name">Gmail</div>
+        </div>
+        <div class="send-option" onclick="sendVia('naver')">
+          <div class="send-option-icon">💚</div>
+          <div class="send-option-name">Naver</div>
+        </div>
+        <div class="send-option" onclick="sendVia('outlook')">
+          <div class="send-option-icon">📨</div>
+          <div class="send-option-name">Outlook</div>
+        </div>
+        <div class="send-option" onclick="sendVia('default')">
+          <div class="send-option-icon">📩</div>
+          <div class="send-option-name">기본 메일</div>
+        </div>
+      </div>
+      <p style="font-size: 12px; color: var(--text-light); text-align: center;">
+        📌 발송하면 자동으로 이력에 저장됩니다
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============= STATE =============
+let state = {
+  companies: [],
+  history: [],
+  templates: getDefaultTemplates(),
+  password: '9413',
+  currentEmail: null,
+  currentCompanyId: null
+};
+
+// ============= DEFAULT TEMPLATES =============
+function getDefaultTemplates() {
+  return [
+    {
+      id: 'factory',
+      name: '🏭 공장/제조업',
+      desc: '제조업체 대상 영업 메일',
+      subject: '[선인자원] 공장 폐자원·스크랩 매입 제안 드립니다 (인천 계양)',
+      body: `안녕하세요, {{회사명}} {{담당자}}님.
+
+인천 계양구에서 자원순환 사업을 2대째 운영하고 있는 선인자원입니다.
+귀사의 공정 중 발생하는 고철·비철 스크랩 및 폐기물 처리에 도움을 드리고자 연락드립니다.
+
+■ 매입 가능 품목
+{{발생자원}}
+
+■ 선인자원의 강점
+  · 인천 계양 지역 거래량 1등 → 시세 정보 가장 정확
+  · 최고가 매입 보장
+  · 세금계산서 즉시 발행 / 현금·계좌 정산 모두 가능
+  · 자체 차량 (5톤·11톤) 보유 → 대량 일괄 수거 1일 처리
+  · 무료 방문견적
+
+현재 발생 중인 스크랩이 있으시거나 정기 수거 거래처를 찾고 계신다면,
+편하신 시간에 무료 방문견적부터 받아보시기 바랍니다.
+
+■ 회사 안내
+  · 홈페이지: https://dk21yoon-design.github.io/suninjawon/
+  · 주소: 인천광역시 계양구 봉오대로 523
+  · 사업자등록번호: 324-36-01049
+  · 운영시간: 월~토 07:00 ~ 18:30
+
+{{메모}}
+
+언제든 부담 없이 연락주십시오. 짧은 회신 한 줄이라도 큰 도움이 됩니다.
+
+감사합니다.
+
+선인자원
+📞 010-9413-0796
+💬 카카오톡 상담: https://open.kakao.com/o/skDEXVsi`
+    },
+    {
+      id: 'school',
+      name: '🏫 학교/관공서',
+      desc: '교육기관·관공서 대상 영업 메일',
+      subject: '[선인자원] 학교/기관 폐자원 처리 제안 (인천 계양·정식 등록업체)',
+      body: `안녕하세요, {{회사명}} {{담당자}}님.
+
+인천 계양구 자원순환 전문기업 선인자원입니다.
+학교·관공서의 폐자원 정리 및 매입 거래에 대한 제안드리고자 연락드립니다.
+
+■ 처리 가능 품목
+{{발생자원}}
+
+■ 학교·관공서 거래 시 강점
+  · 정식 등록업체 (사업자등록·허가증 보유)
+  · 세금계산서 즉시 발행 → 행정 처리 간편
+  · 기밀문서 안전 파쇄 처리 (개인정보 안전 처리 가능)
+  · 처리확인서 발급
+  · 무료 방문견적 / 24시간 내 회신
+  · 투명한 계량·시세 정산
+
+학기 종료/방학 시즌 학교 정리, 폐서적, 폐가전, OA기기 등 
+모든 폐자원 일괄 처리 가능합니다.
+
+■ 회사 안내
+  · 홈페이지: https://dk21yoon-design.github.io/suninjawon/
+  · 주소: 인천광역시 계양구 봉오대로 523
+  · 사업자등록번호: 324-36-01049
+  · 운영시간: 월~토 07:00 ~ 18:30
+
+{{메모}}
+
+견적 문의는 부담 없이 연락주십시오.
+
+감사합니다.
+
+선인자원
+📞 010-9413-0796
+💬 카카오톡 상담: https://open.kakao.com/o/skDEXVsi`
+    },
+    {
+      id: 'construction',
+      name: '🏗 건설/철거 현장',
+      desc: '건설사·철거업체 대상 영업 메일',
+      subject: '[선인자원] 건설/철거 현장 자재·고철 일괄 매입 (인천 계양)',
+      body: `안녕하세요, {{회사명}} {{담당자}}님.
+
+인천 계양구에서 자원순환 사업을 운영하는 선인자원입니다.
+건설현장·철거현장에서 발생하는 자재·고철·폐기물 일괄 매입을 제안드립니다.
+
+■ 매입 가능 품목
+{{발생자원}}
+
+■ 건설·철거 현장 특화 서비스
+  · 5톤·11톤 자체 차량 보유 → 대량 일괄 수거 가능
+  · 1일 처리 가능 (현장 정리 일정 단축)
+  · 최고가 매입 보장
+  · 세금계산서 즉시 발행
+  · 현금·계좌이체 정산 모두 가능
+  · 무료 방문견적 / 24시간 내 회신
+
+진행 중이신 현장이 있으시거나 정기 거래처를 찾고 계신다면,
+방문견적부터 받아보시기 바랍니다.
+
+■ 회사 안내
+  · 홈페이지: https://dk21yoon-design.github.io/suninjawon/
+  · 주소: 인천광역시 계양구 봉오대로 523
+  · 사업자등록번호: 324-36-01049
+
+{{메모}}
+
+연락 기다리겠습니다.
+
+감사합니다.
+
+선인자원
+📞 010-9413-0796
+💬 카카오톡 상담: https://open.kakao.com/o/skDEXVsi`
+    },
+    {
+      id: 'moving',
+      name: '📦 이사/정리업체',
+      desc: '이사·정리업체 대상 영업 메일',
+      subject: '[선인자원] 이사·정리 시 발생 폐가전·자원 매입 (인천 계양)',
+      body: `안녕하세요, {{회사명}} {{담당자}}님.
+
+인천 계양구 자원순환 전문기업 선인자원입니다.
+이사·사무실 정리 시 발생하는 폐가전·폐자원 매입을 제안드립니다.
+
+■ 매입 가능 품목
+{{발생자원}}
+
+■ 이사·정리 업계 특화 강점
+  · 소량부터 대량까지 모두 OK
+  · 빠른 방문 / 1일 처리
+  · 무료 방문견적
+  · 현금·계좌이체 정산 가능
+  · 친절한 응대 (고객 만족도 ↑)
+
+귀사의 이사·정리 작업 후, 고객의 폐자원을 부담 없이 처리하실 수 있도록
+정기 거래처로 협력하고 싶습니다.
+
+고객에게도 추가 매입가가 있다는 점은 큰 만족 요소입니다.
+
+■ 회사 안내
+  · 홈페이지: https://dk21yoon-design.github.io/suninjawon/
+  · 주소: 인천광역시 계양구 봉오대로 523
+  · 사업자등록번호: 324-36-01049
+  · 운영시간: 월~토 07:00 ~ 18:30
+
+{{메모}}
+
+부담 없이 연락주십시오.
+
+감사합니다.
+
+선인자원
+📞 010-9413-0796
+💬 카카오톡 상담: https://open.kakao.com/o/skDEXVsi`
+    }
+  ];
+}
+
+const RESOURCES = [
+  '고철', '스텐 (SUS304/316)', '상동·황동·신주', 
+  '알루미늄', '양은·초경', '전선', '파지', '폐가전·에어컨', 'OA기기'
+];
+
+// ============= LOCAL STORAGE =============
+function saveState() {
+  try {
+    localStorage.setItem('sunin_admin', JSON.stringify({
+      companies: state.companies,
+      history: state.history,
+      templates: state.templates,
+      password: state.password
+    }));
+  } catch(e) {
+    console.error('Save failed', e);
+  }
+}
+
+function loadState() {
+  try {
+    const data = localStorage.getItem('sunin_admin');
+    if (data) {
+      const parsed = JSON.parse(data);
+      state.companies = parsed.companies || [];
+      state.history = parsed.history || [];
+      state.templates = parsed.templates || getDefaultTemplates();
+      state.password = parsed.password || '9413';
+    }
+  } catch(e) {
+    console.error('Load failed', e);
+  }
+}
+
+// ============= LOGIN =============
+function checkLogin() {
+  const input = document.getElementById('loginInput');
+  const error = document.getElementById('loginError');
+  if (input.value === state.password) {
+    document.getElementById('loginScreen').classList.add('hidden');
+    sessionStorage.setItem('sunin_logged_in', 'true');
+    init();
+  } else {
+    error.classList.add('show');
+    input.value = '';
+    setTimeout(() => error.classList.remove('show'), 2000);
+  }
+}
+
+function logout() {
+  if (confirm('로그아웃 하시겠습니까?')) {
+    sessionStorage.removeItem('sunin_logged_in');
+    location.reload();
+  }
+}
+
+function changePassword() {
+  const current = prompt('현재 비밀번호를 입력하세요:');
+  if (current !== state.password) {
+    showToast('비밀번호가 틀렸어요', 'error');
+    return;
+  }
+  const newPw = prompt('새 비밀번호를 입력하세요 (4-6자리 숫자):');
+  if (!newPw || !/^\d{4,6}$/.test(newPw)) {
+    showToast('4~6자리 숫자만 가능합니다', 'error');
+    return;
+  }
+  const confirm = prompt('새 비밀번호를 한번 더 입력하세요:');
+  if (newPw !== confirm) {
+    showToast('비밀번호가 일치하지 않아요', 'error');
+    return;
+  }
+  state.password = newPw;
+  saveState();
+  showToast('비밀번호 변경 완료!');
+}
+
+document.getElementById('loginInput').addEventListener('keypress', e => {
+  if (e.key === 'Enter') checkLogin();
+});
+
+// ============= TABS =============
+function switchTab(tabName, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('page-' + tabName).classList.add('active');
+  
+  if (tabName === 'dashboard') renderDashboard();
+  else if (tabName === 'companies') renderCompanies();
+  else if (tabName === 'compose') renderCompose();
+  else if (tabName === 'history') renderHistory();
+  else if (tabName === 'reminders') renderReminders();
+  else if (tabName === 'templates') renderTemplates();
+}
+
+function switchTabByName(tabName) {
+  const tabs = document.querySelectorAll('.tab');
+  const tabIndex = ['dashboard', 'companies', 'compose', 'history', 'reminders', 'templates'].indexOf(tabName);
+  if (tabIndex >= 0 && tabs[tabIndex]) {
+    switchTab(tabName, tabs[tabIndex]);
+  }
+}
+
+// ============= DASHBOARD =============
+function renderDashboard() {
+  const total = state.companies.length;
+  document.getElementById('statTotal').textContent = total;
+  
+  const now = new Date();
+  const thisMonth = state.history.filter(h => {
+    const d = new Date(h.date);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+  document.getElementById('statMonth').textContent = thisMonth.length;
+  document.getElementById('statMonthSub').textContent = `${now.getMonth() + 1}월 발송`;
+  
+  const replies = state.companies.filter(c => c.status === '답장받음' || c.status === '거래성사').length;
+  document.getElementById('statReply').textContent = replies;
+  const replyRate = total ? Math.round((replies / total) * 100) : 0;
+  document.getElementById('statReplySub').textContent = `답장률 ${replyRate}%`;
+  
+  const deals = state.companies.filter(c => c.status === '거래성사').length;
+  document.getElementById('statDeal').textContent = deals;
+  const dealRate = total ? Math.round((deals / total) * 100) : 0;
+  document.getElementById('statDealSub').textContent = `성사율 ${dealRate}%`;
+  
+  // Reminders
+  const reminders = getReminders().slice(0, 3);
+  const dashRem = document.getElementById('dashReminders');
+  if (reminders.length === 0) {
+    dashRem.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✨</div><div class="empty-state-text">후속 연락 필요한 회사가 없어요</div></div>';
+  } else {
+    dashRem.innerHTML = '<div class="reminder-list">' + reminders.map(r => `
+      <div class="reminder-item ${r.urgency}" onclick="showCompanyDetail('${r.id}')">
+        <div class="reminder-icon">${r.icon}</div>
+        <div class="reminder-content">
+          <div class="reminder-title">${escapeHtml(r.name)}</div>
+          <div class="reminder-desc">${r.desc}</div>
+        </div>
+      </div>
+    `).join('') + '</div>';
+  }
+  
+  // Distribution
+  const industries = {};
+  state.companies.forEach(c => {
+    industries[c.industry || '기타'] = (industries[c.industry || '기타'] || 0) + 1;
+  });
+  const distEl = document.getElementById('dashDistribution');
+  if (Object.keys(industries).length === 0) {
+    distEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">아직 등록된 회사가 없어요</div></div>';
+  } else {
+    const max = Math.max(...Object.values(industries));
+    distEl.innerHTML = '<div class="dist-list">' + Object.entries(industries).map(([k, v]) => `
+      <div class="dist-item">
+        <div class="dist-label">${escapeHtml(k)}</div>
+        <div class="dist-bar"><div class="dist-bar-fill" style="width: ${(v/max)*100}%;">${v}</div></div>
+        <div class="dist-value">${v}곳</div>
+      </div>
+    `).join('') + '</div>';
+  }
+  
+  // Recent
+  const recent = state.history.slice(-5).reverse();
+  const recentEl = document.getElementById('dashRecent');
+  if (recent.length === 0) {
+    recentEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📜</div><div class="empty-state-text">아직 발송 이력이 없어요</div></div>';
+  } else {
+    recentEl.innerHTML = '<div class="history-list">' + recent.map(h => `
+      <div class="history-item">
+        <div class="history-icon">📧</div>
+        <div class="history-content">
+          <div class="history-company">${escapeHtml(h.company)}</div>
+          <div class="history-info">${escapeHtml(h.subject)}</div>
+        </div>
+        <div class="history-date">${formatDate(h.date)}</div>
+      </div>
+    `).join('') + '</div>';
+  }
+  
+  // Update badge
+  document.getElementById('companiesBadge').textContent = total;
+  const reminderCount = getReminders().length;
+  const reminderBadge = document.getElementById('reminderBadge');
+  if (reminderCount > 0) {
+    reminderBadge.textContent = reminderCount;
+    reminderBadge.style.display = '';
+  } else {
+    reminderBadge.style.display = 'none';
+  }
+}
+
+function getReminders() {
+  const now = new Date();
+  return state.companies
+    .filter(c => c.status === '발송완료')
+    .map(c => {
+      if (!c.lastContactDate) return null;
+      const lastDate = new Date(c.lastContactDate);
+      const days = Math.floor((now - lastDate) / (1000 * 60 * 60 * 24));
+      if (days < 3) return null;
+      
+      let urgency = 'normal', icon = '🔔', desc = '';
+      if (days >= 14) {
+        urgency = 'urgent';
+        icon = '🚨';
+        desc = `${days}일 전 발송 - 후속 연락 시급`;
+      } else if (days >= 7) {
+        urgency = 'normal';
+        icon = '⏰';
+        desc = `${days}일 전 발송 - 후속 연락 권장`;
+      } else {
+        urgency = 'normal';
+        icon = '🔔';
+        desc = `${days}일 전 발송 - 답장 대기 중`;
+      }
+      
+      return { id: c.id, name: c.name, urgency, icon, desc, days };
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.days - a.days);
+}
+
+// ============= COMPANIES =============
+function renderCompanies() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const filterStatus = document.getElementById('filterStatus').value;
+  const filterTag = document.getElementById('filterTag').value;
+  const filterIndustry = document.getElementById('filterIndustry').value;
+  
+  let companies = state.companies.filter(c => {
+    if (search) {
+      const text = `${c.name} ${c.contact} ${c.memo} ${c.email}`.toLowerCase();
+      if (!text.includes(search)) return false;
+    }
+    if (filterStatus && c.status !== filterStatus) return false;
+    if (filterTag && !(c.tags || []).includes(filterTag)) return false;
+    if (filterIndustry && c.industry !== filterIndustry) return false;
+    return true;
+  });
+  
+  const tbody = document.getElementById('companiesTable');
+  if (companies.length === 0) {
+    tbody.innerHTML = `
+      <tr><td colspan="7">
+        <div class="empty-state">
+          <div class="empty-state-icon">🏢</div>
+          <div class="empty-state-text">${state.companies.length === 0 ? '아직 등록된 회사가 없어요. "+ 회사 추가"를 눌러주세요!' : '검색 결과가 없어요'}</div>
+        </div>
+      </td></tr>
+    `;
+    return;
+  }
+  
+  tbody.innerHTML = companies.map(c => `
+    <tr onclick="showCompanyDetail('${c.id}')">
+      <td>
+        <div class="company-name">${escapeHtml(c.name)}</div>
+        ${c.contact ? `<small>${escapeHtml(c.contact)}</small>` : ''}
+      </td>
+      <td>${escapeHtml(c.industry || '-')}</td>
+      <td>
+        ${c.email ? `<div style="font-size:12px;">${escapeHtml(c.email)}</div>` : ''}
+        ${c.phone ? `<div style="font-size:12px;color:var(--text-light);">${escapeHtml(c.phone)}</div>` : ''}
+      </td>
+      <td><span class="status-badge ${c.status}">${c.status}</span></td>
+      <td>${(c.tags || []).map(t => `<span class="tag ${t}">${tagName(t)}</span>`).join('') || '-'}</td>
+      <td style="font-size:12px;color:var(--text-mid);">${c.lastContactDate ? formatDate(c.lastContactDate) : '-'}</td>
+      <td>
+        <button class="btn btn-secondary" style="padding:6px 12px;font-size:12px;" onclick="event.stopPropagation();quickEmailFor('${c.id}')">📧</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function tagName(t) {
+  const names = { vip: '⭐ VIP', large: '📦 대량', regular: '🔄 정기', interest: '👀 관심' };
+  return names[t] || t;
+}
+
+function openCompanyModal(id) {
+  document.getElementById('companyModalTitle').textContent = id ? '회사 정보 수정' : '+ 새 회사 추가';
+  document.getElementById('companyId').value = id || '';
+  document.getElementById('deleteBtn').style.display = id ? '' : 'none';
+  
+  const c = id ? state.companies.find(x => x.id === id) : null;
+  document.getElementById('modalCoName').value = c?.name || '';
+  document.getElementById('modalContact').value = c?.contact || '';
+  document.getElementById('modalEmail').value = c?.email || '';
+  document.getElementById('modalPhone').value = c?.phone || '';
+  document.getElementById('modalIndustry').value = c?.industry || '공장';
+  document.getElementById('modalStatus').value = c?.status || '미발송';
+  document.getElementById('modalAddress').value = c?.address || '';
+  document.getElementById('modalMemo').value = c?.memo || '';
+  
+  document.querySelectorAll('#modalTags .tag-option').forEach(opt => {
+    opt.classList.toggle('selected', (c?.tags || []).includes(opt.dataset.tag));
+    opt.onclick = () => opt.classList.toggle('selected');
+  });
+  
+  document.getElementById('companyModal').classList.add('show');
+}
+
+function saveCompany() {
+  const name = document.getElementById('modalCoName').value.trim();
+  if (!name) { showToast('회사명은 필수입니다', 'error'); return; }
+  
+  const id = document.getElementById('companyId').value;
+  const tags = Array.from(document.querySelectorAll('#modalTags .tag-option.selected')).map(o => o.dataset.tag);
+  
+  const data = {
+    name,
+    contact: document.getElementById('modalContact').value.trim(),
+    email: document.getElementById('modalEmail').value.trim(),
+    phone: document.getElementById('modalPhone').value.trim(),
+    industry: document.getElementById('modalIndustry').value,
+    status: document.getElementById('modalStatus').value,
+    address: document.getElementById('modalAddress').value.trim(),
+    memo: document.getElementById('modalMemo').value.trim(),
+    tags,
+    updatedAt: new Date().toISOString()
+  };
+  
+  if (id) {
+    const idx = state.companies.findIndex(c => c.id === id);
+    state.companies[idx] = { ...state.companies[idx], ...data };
+  } else {
+    data.id = 'c_' + Date.now();
+    data.createdAt = new Date().toISOString();
+    state.companies.push(data);
+  }
+  
+  saveState();
+  closeModal('companyModal');
+  renderCompanies();
+  showToast(id ? '✅ 수정 완료' : '✅ 회사 추가 완료');
+}
+
+function deleteCompany() {
+  const id = document.getElementById('companyId').value;
+  if (!id) return;
+  if (!confirm('정말 삭제하시겠습니까?\n발송 이력은 유지됩니다.')) return;
+  state.companies = state.companies.filter(c => c.id !== id);
+  saveState();
+  closeModal('companyModal');
+  renderCompanies();
+  showToast('🗑️ 삭제 완료');
+}
+
+// ============= COMPANY DETAIL =============
+function showCompanyDetail(id) {
+  const c = state.companies.find(x => x.id === id);
+  if (!c) return;
+  state.currentCompanyId = id;
+  
+  document.getElementById('detailTitle').textContent = c.name;
+  
+  const history = state.history.filter(h => h.companyId === id);
+  
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-section">
+      <div class="detail-section-title">📋 기본 정보</div>
+      <div class="detail-grid">
+        <div class="detail-item"><div class="detail-label">담당자</div><div class="detail-value">${escapeHtml(c.contact || '-')}</div></div>
+        <div class="detail-item"><div class="detail-label">업종</div><div class="detail-value">${escapeHtml(c.industry || '-')}</div></div>
+        <div class="detail-item"><div class="detail-label">이메일</div><div class="detail-value">${escapeHtml(c.email || '-')}</div></div>
+        <div class="detail-item"><div class="detail-label">전화번호</div><div class="detail-value">${escapeHtml(c.phone || '-')}</div></div>
+        <div class="detail-item"><div class="detail-label">상태</div><div class="detail-value"><span class="status-badge ${c.status}">${c.status}</span></div></div>
+        <div class="detail-item"><div class="detail-label">최근 연락</div><div class="detail-value">${c.lastContactDate ? formatDate(c.lastContactDate) : '-'}</div></div>
+      </div>
+      ${c.address ? `<div class="detail-item" style="margin-top:8px;"><div class="detail-label">주소</div><div class="detail-value">${escapeHtml(c.address)}</div></div>` : ''}
+      ${c.tags && c.tags.length ? `<div style="margin-top:12px;">${c.tags.map(t => `<span class="tag ${t}">${tagName(t)}</span>`).join('')}</div>` : ''}
+    </div>
+    
+    ${c.memo ? `
+    <div class="detail-section">
+      <div class="detail-section-title">📝 메모</div>
+      <div style="background:var(--cream);padding:14px;border-radius:10px;font-size:14px;white-space:pre-wrap;">${escapeHtml(c.memo)}</div>
+    </div>
+    ` : ''}
+    
+    <div class="detail-section">
+      <div class="detail-section-title">📜 발송 이력 (${history.length}건)</div>
+      ${history.length === 0 ? '<div class="empty-state" style="padding:20px;"><div class="empty-state-text">아직 발송 이력이 없어요</div></div>' : 
+        '<div class="history-list">' + history.reverse().map(h => `
+          <div class="history-item">
+            <div class="history-icon">📧</div>
+            <div class="history-content">
+              <div class="history-company">${escapeHtml(h.subject)}</div>
+              <div class="history-info">${escapeHtml(h.template || '')}</div>
+            </div>
+            <div class="history-date">${formatDate(h.date)}</div>
+          </div>
+        `).join('') + '</div>'
+      }
+    </div>
+  `;
+  
+  document.getElementById('detailModal').classList.add('show');
+}
+
+function editFromDetail() {
+  const id = state.currentCompanyId;
+  closeModal('detailModal');
+  setTimeout(() => openCompanyModal(id), 200);
+}
+
+function quickEmail() {
+  const id = state.currentCompanyId;
+  closeModal('detailModal');
+  quickEmailFor(id);
+}
+
+function quickEmailFor(id) {
+  switchTabByName('compose');
+  setTimeout(() => {
+    document.getElementById('composeCompany').value = id;
+    loadCompanyToCompose();
+  }, 100);
+}
+
+// ============= COMPOSE =============
+function renderCompose() {
+  // Company selector
+  const sel = document.getElementById('composeCompany');
+  sel.innerHTML = '<option value="">-- 직접 입력 --</option>' +
+    state.companies.map(c => `<option value="${c.id}">${escapeHtml(c.name)}${c.contact ? ' - ' + escapeHtml(c.contact) : ''}</option>`).join('');
+  
+  // Templates
+  const tplList = document.getElementById('templateList');
+  tplList.innerHTML = state.templates.map((t, i) => `
+    <div class="template-item ${i === 0 ? 'selected' : ''}" data-tpl="${t.id}" onclick="selectTemplate(this)">
+      <div class="template-item-name">${escapeHtml(t.name)}</div>
+      <div class="template-item-desc">${escapeHtml(t.desc)}</div>
+    </div>
+  `).join('');
+  
+  // Resources
+  const resSel = document.getElementById('resourcesSelector');
+  resSel.innerHTML = RESOURCES.map(r => `
+    <div class="tag-option" onclick="this.classList.toggle('selected')">${escapeHtml(r)}</div>
+  `).join('');
+}
+
+function selectTemplate(el) {
+  document.querySelectorAll('.template-item').forEach(t => t.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function loadCompanyToCompose() {
+  const id = document.getElementById('composeCompany').value;
+  if (!id) return;
+  const c = state.companies.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('composeCoName').value = c.name;
+  document.getElementById('composeContact').value = c.contact || '';
+  document.getElementById('composeEmail').value = c.email || '';
+  
+  // Auto-select template by industry
+  const tplMap = { '공장': 'factory', '학교': 'school', '건설': 'construction', '이사': 'moving' };
+  const tplId = tplMap[c.industry] || 'factory';
+  document.querySelectorAll('.template-item').forEach(t => {
+    t.classList.toggle('selected', t.dataset.tpl === tplId);
+  });
+}
+
+function generateEmail() {
+  const coName = document.getElementById('composeCoName').value.trim();
+  const contact = document.getElementById('composeContact').value.trim();
+  const email = document.getElementById('composeEmail').value.trim();
+  const memo = document.getElementById('composeMemo').value.trim();
+  
+  if (!coName) { showToast('회사명을 입력해주세요', 'error'); return; }
+  if (!email) { showToast('받는 메일을 입력해주세요', 'error'); return; }
+  
+  const tplId = document.querySelector('.template-item.selected')?.dataset.tpl || state.templates[0].id;
+  const tpl = state.templates.find(t => t.id === tplId);
+  
+  const resources = Array.from(document.querySelectorAll('#resourcesSelector .tag-option.selected'))
+    .map(el => '  · ' + el.textContent.trim()).join('\n');
+  const resourcesText = resources || '  · 고철·비철·전선·폐가전 등 모든 자원';
+  
+  let body = tpl.body
+    .replace(/{{회사명}}/g, coName)
+    .replace(/{{담당자}}/g, contact || '담당자')
+    .replace(/{{발생자원}}/g, resourcesText)
+    .replace(/{{메모}}/g, memo || '');
+  
+  // Clean empty memo line
+  body = body.replace(/\n\n\n+/g, '\n\n');
+  
+  state.currentEmail = {
+    subject: tpl.subject,
+    body,
+    to: email,
+    company: coName,
+    contact,
+    template: tpl.name,
+    companyId: document.getElementById('composeCompany').value || null
+  };
+  
+  document.getElementById('previewSubject').textContent = tpl.subject;
+  document.getElementById('previewMeta').textContent = `받는사람: ${email}${contact ? ` (${contact})` : ''}`;
+  document.getElementById('previewBody').textContent = body;
+  
+  showToast('✅ 메일 생성 완료!');
+}
+
+function copyEmail() {
+  if (!state.currentEmail) { showToast('먼저 메일을 생성해주세요', 'error'); return; }
+  const text = `${state.currentEmail.subject}\n\n${state.currentEmail.body}`;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('📋 본문 복사 완료!');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('📋 본문 복사 완료!');
+  });
+}
+
+// ============= SEND =============
+function openSendModal() {
+  if (!state.currentEmail) { showToast('먼저 메일을 생성해주세요', 'error'); return; }
+  document.getElementById('sendModal').classList.add('show');
+}
+
+function sendVia(provider) {
+  const e = state.currentEmail;
+  if (!e) return;
+  
+  const subject = encodeURIComponent(e.subject);
+  const body = encodeURIComponent(e.body);
+  const to = encodeURIComponent(e.to);
+  
+  let url = '';
+  if (provider === 'gmail') {
+    url = `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${body}`;
+  } else if (provider === 'naver') {
+    url = `https://mail.naver.com/write/popup?to=${to}&subject=${subject}&body=${body}`;
+  } else if (provider === 'outlook') {
+    url = `https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${subject}&body=${body}`;
+  } else {
+    url = `mailto:${to}?subject=${subject}&body=${body}`;
+  }
+  
+  window.open(url, '_blank');
+  
+  // Save history
+  state.history.push({
+    id: 'h_' + Date.now(),
+    date: new Date().toISOString(),
+    company: e.company,
+    companyId: e.companyId,
+    contact: e.contact,
+    to: e.to,
+    subject: e.subject,
+    template: e.template,
+    provider
+  });
+  
+  // Update company status
+  if (e.companyId) {
+    const c = state.companies.find(x => x.id === e.companyId);
+    if (c) {
+      c.status = c.status === '미발송' ? '발송완료' : c.status;
+      c.lastContactDate = new Date().toISOString();
+    }
+  }
+  
+  saveState();
+  closeModal('sendModal');
+  showToast('📧 메일 앱이 열렸어요! 검토 후 보내주세요');
+}
+
+// ============= HISTORY =============
+function renderHistory() {
+  const search = document.getElementById('historySearch').value.toLowerCase();
+  const monthFilter = document.getElementById('historyMonth').value;
+  
+  // Build month options
+  const months = [...new Set(state.history.map(h => h.date.substring(0, 7)))].sort().reverse();
+  const monthSel = document.getElementById('historyMonth');
+  if (monthSel.options.length <= 1) {
+    monthSel.innerHTML = '<option value="">전체 기간</option>' +
+      months.map(m => `<option value="${m}">${m.replace('-', '년 ')}월</option>`).join('');
+  }
+  
+  let history = [...state.history].reverse();
+  if (search) {
+    history = history.filter(h => 
+      `${h.company} ${h.subject} ${h.contact}`.toLowerCase().includes(search)
+    );
+  }
+  if (monthFilter) {
+    history = history.filter(h => h.date.startsWith(monthFilter));
+  }
+  
+  const list = document.getElementById('historyList');
+  if (history.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📜</div><div class="empty-state-text">발송 이력이 없어요</div></div>';
+    return;
+  }
+  
+  list.innerHTML = history.map(h => `
+    <div class="history-item" ${h.companyId ? `onclick="showCompanyDetail('${h.companyId}')"` : ''} style="cursor:${h.companyId ? 'pointer' : 'default'};">
+      <div class="history-icon">📧</div>
+      <div class="history-content">
+        <div class="history-company">${escapeHtml(h.company)}${h.contact ? ` <span style="color:var(--text-light);font-weight:500;">- ${escapeHtml(h.contact)}</span>` : ''}</div>
+        <div class="history-info">${escapeHtml(h.subject)}</div>
+      </div>
+      <div class="history-date">${formatDate(h.date)}</div>
+    </div>
+  `).join('');
+}
+
+// ============= REMINDERS =============
+function renderReminders() {
+  const reminders = getReminders();
+  const list = document.getElementById('remindersList');
+  if (reminders.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✨</div><div class="empty-state-text">후속 연락이 필요한 회사가 없어요!</div></div>';
+    return;
+  }
+  list.innerHTML = reminders.map(r => `
+    <div class="reminder-item ${r.urgency}" onclick="showCompanyDetail('${r.id}')">
+      <div class="reminder-icon">${r.icon}</div>
+      <div class="reminder-content">
+        <div class="reminder-title">${escapeHtml(r.name)}</div>
+        <div class="reminder-desc">${r.desc}</div>
+      </div>
+      <button class="btn btn-outline" style="padding:6px 12px;font-size:12px;" onclick="event.stopPropagation();quickEmailFor('${r.id}')">📧 후속메일</button>
+    </div>
+  `).join('');
+}
+
+// ============= TEMPLATES =============
+function renderTemplates() {
+  const editor = document.getElementById('templatesEditor');
+  editor.innerHTML = state.templates.map((t, i) => `
+    <div class="panel" style="margin-bottom:16px;">
+      <div class="panel-title">${escapeHtml(t.name)}</div>
+      <div class="form-group">
+        <label>제목</label>
+        <input type="text" value="${escapeHtml(t.subject)}" oninput="state.templates[${i}].subject = this.value;saveState()">
+      </div>
+      <div class="form-group">
+        <label>본문 (변수: <code style="background:var(--cream);padding:2px 6px;border-radius:4px;">{{회사명}}</code>, <code style="background:var(--cream);padding:2px 6px;border-radius:4px;">{{담당자}}</code>, <code style="background:var(--cream);padding:2px 6px;border-radius:4px;">{{발생자원}}</code>, <code style="background:var(--cream);padding:2px 6px;border-radius:4px;">{{메모}}</code>)</label>
+        <textarea style="min-height:300px;font-family:monospace;font-size:13px;" oninput="state.templates[${i}].body = this.value;saveState()">${escapeHtml(t.body)}</textarea>
+      </div>
+    </div>
+  `).join('');
+}
+
+function resetTemplates() {
+  if (!confirm('템플릿을 기본값으로 되돌리시겠습니까?\n수정한 내용은 사라집니다.')) return;
+  state.templates = getDefaultTemplates();
+  saveState();
+  renderTemplates();
+  showToast('🔄 기본값으로 복원 완료');
+}
+
+// ============= EXPORT/IMPORT =============
+function exportData() {
+  const data = {
+    exportDate: new Date().toISOString(),
+    companies: state.companies,
+    history: state.history,
+    templates: state.templates
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `선인자원_백업_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📥 백업 파일 다운로드 완료!');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!confirm(`${data.companies?.length || 0}개 회사, ${data.history?.length || 0}개 이력을 가져옵니다.\n현재 데이터를 모두 덮어쓰는데 진행하시겠습니까?`)) return;
+      if (data.companies) state.companies = data.companies;
+      if (data.history) state.history = data.history;
+      if (data.templates) state.templates = data.templates;
+      saveState();
+      renderDashboard();
+      renderCompanies();
+      showToast('📤 가져오기 완료!');
+    } catch(err) {
+      showToast('❌ 파일을 읽을 수 없어요', 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ============= UTILS =============
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+function closeModalBg(e, id) {
+  if (e.target.id === id) closeModal(id);
+}
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function formatDate(iso) {
+  const d = new Date(iso);
+  const now = new Date();
+  const diffMs = now - d;
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return '오늘';
+  if (diffDays === 1) return '어제';
+  if (diffDays < 7) return `${diffDays}일 전`;
+  return d.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+}
+
+// ============= INIT =============
+function init() {
+  loadState();
+  renderDashboard();
+  renderCompanies();
+  renderCompose();
+}
+
+// Auto-login if session valid
+if (sessionStorage.getItem('sunin_logged_in') === 'true') {
+  loadState();
+  document.getElementById('loginScreen').classList.add('hidden');
+  init();
+} else {
+  loadState(); // Load password
+}
+</script>
+
+</body>
+</html>
